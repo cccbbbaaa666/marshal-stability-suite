@@ -1,0 +1,9 @@
+﻿[project]
+name = "marshal-stability-suite"
+version = "0.1.0"
+description = "Stability and correctness test suite for Python's marshal module"
+readme = "README.md"
+requires-python = ">=3.9"
+
+[tool.ruff]
+line-length = 88
