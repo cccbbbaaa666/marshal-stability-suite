@@ -23,7 +23,7 @@
 - `tests/test_fuzzing.py`：固定种子的随机模糊测试
 - `scripts/collect_marshal_digests.py`：采集当前环境下代表性样例的 SHA-256 摘要
 
-此外，`.github/workflows/ci.yml` 提供了 Windows、Linux、macOS 与 Python 3.9-3.13 的矩阵执行环境，用于补充跨平台/跨版本证据。
+此外，`.github/workflows/ci.yml` 提供了 Windows、Linux、macOS 与 Python 3.11-3.13 的矩阵执行环境，用于补充跨平台/跨版本证据。
 
 ## 3. 采用的测试技术
 
@@ -106,6 +106,12 @@
 
 本地运行结果：25 项测试全部通过。
 
+公开仓库 CI 环境：
+
+- Windows / Ubuntu / macOS
+- Python 3.11 / 3.12 / 3.13
+- GitHub Actions 已生成 9 份 `marshal-digests-*` artifact
+
 ### 6.1 主要发现
 
 1. **同版本内表现出很强的确定性。**  
@@ -123,6 +129,9 @@
 5. **`bytearray` 的行为值得单独记录。**  
    在 Python 3.11.7 上，`marshal.dumps(bytearray(...))` 可以成功，但 `marshal.loads()` 返回的是 `bytes`，不是 `bytearray`。这不影响字节内容，但影响返回类型，应在报告中明确说明。
 
+6. **跨平台/跨版本自动化验证已覆盖 Python 3.11-3.13。**  
+   公开仓库中的 GitHub Actions 已在 Windows、Ubuntu 和 macOS 上运行 Python 3.11、3.12、3.13 三组版本组合，并成功产出 9 份 digest artifact。此前对 3.9/3.10 的探索性矩阵运行出现失败，因此最终提交版本把自动化验证范围明确收敛为 3.11+。
+
 ### 6.2 摘要证据
 
 `scripts/collect_marshal_digests.py` 在本机采集到的代表性摘要显示：
@@ -135,21 +144,29 @@
 
 这些结果说明当前解释器对代表性对象的编码是稳定可复现的。
 
+与此同时，公开仓库 CI 已经为以下 9 个环境生成 digest 工件：
+
+- Ubuntu 3.11 / 3.12 / 3.13
+- Windows 3.11 / 3.12 / 3.13
+- macOS 3.11 / 3.12 / 3.13
+
+这说明测试套件已经真正被部署到多操作系统与多 Python 版本环境中执行，而不仅仅停留在设计层面。
+
 ## 7. 局限性
 
-- 我本地只直接验证了 Windows + Python 3.11.7；其余平台和版本依赖 CI 矩阵补全。
+- 我本地直接验证的是 Windows + Python 3.11.7；其余 3.11-3.13 平台/版本组合通过公开 CI 运行覆盖。
 - 测试集虽覆盖了大量代表性输入，但不能证明“所有可能 Python 对象”都稳定。
 - 模糊测试是轻量级的，主要目标是发现意外组合，而不是穷尽搜索。
 - 没有对 CPython `marshal.c` 做源码级覆盖率度量，因此白盒覆盖是“结构化映射”，不是精确百分比。
-- 报告未把跨版本差异设为失败条件，因此跨版本结论需要结合 CI 产出的 digest 工件人工比较。
+- 报告未把跨版本差异设为失败条件，因此跨版本结论仍需要结合 CI 产出的 digest 工件逐项比较。
 
 ## 8. 结论
 
 在当前本地环境中，`marshal` 对已测试的支持类型表现出较好的稳定性与正确性：同一输入通常会产生 hash-identical 输出，递归和共享引用在新版本中工作正常，非法输入也会被显式拒绝。  
 但 `marshal` 仍然不是通用持久化格式，跨 Python 版本稳定性不应被假定；`bytearray` 被加载回 `bytes` 的现象也表明，某些“支持类型”需要更精细地理解其语义。
 
-提交前建议：
+提交前检查：
 
-1. 将仓库发布到 GitHub/GitLab，并替换报告顶部的仓库链接。
-2. 运行 GitHub Actions 矩阵，收集跨平台/跨版本 digest。
-3. 将 CI 结果中的差异补充进本报告的“发现”部分。
+1. 导出本报告为 PDF，并确认排版不超过 8 页。
+2. 在提交包中保留公开仓库链接与测试代码目录。
+3. 如课程允许附录，可补充 GitHub Actions 运行截图作为支撑证据。

@@ -1,4 +1,4 @@
-﻿# Python `marshal` 模块稳定性与正确性测试套件
+# Python `marshal` 模块稳定性与正确性测试套件
 
 本仓库用于验证 Python `marshal` 模块在以下方面的行为：
 
@@ -11,8 +11,8 @@
 
 - `tests/`：基于 `unittest` 的测试套件
 - `scripts/collect_marshal_digests.py`：输出当前环境下的摘要结果，便于跨平台/跨版本比较
-- `.github/workflows/ci.yml`：Windows / Linux / macOS 与多 Python 版本测试矩阵
-- `report/final_report.md`：最终报告草稿
+- `.github/workflows/ci.yml`：Windows / Linux / macOS 与 Python 3.11-3.13 测试矩阵
+- `report/report.md`：最终报告草稿
 
 ## 本地运行
 
@@ -30,5 +30,5 @@ python scripts/collect_marshal_digests.py
 ## 说明
 
 - `marshal` 官方文档明确说明格式可能随 Python 版本变化，因此本仓库不把跨版本字节完全一致设为必须通过的断言。
-- CI 矩阵用于收集不同平台与版本的行为证据；若你要提交课程作业，请在公开 GitHub/GitLab 后把仓库链接填入报告。
-- 建议仓库发布地址占位：`https://github.com/<your-account>/marshal-stability-suite`
+- 当前仓库的自动化验证目标为 Python 3.11-3.13；更旧版本可作为扩展调查对象，但不在当前提交的受支持自动化范围内。
+- 当前公开仓库地址：`https://github.com/cccbbbaaa666/marshal-stability-suite`
